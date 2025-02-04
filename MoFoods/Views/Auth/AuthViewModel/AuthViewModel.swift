@@ -20,21 +20,29 @@ class AuthViewModel: ViewModel {
     }
 
     func signUp() {
+        self.showLoader = true
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [self] in
                 if let error = error {
 //                    self.errorMessage = error.localizedDescription
                     self.showAlert(message: error.localizedDescription)
                 } else {
                     self.user = authResult?.user
-                    DatabaseManager.shared.storeUserOnFirebase(user: FUser(id: self.user?.uid ?? "", name: self.userName, email: self.email))
+                    var dbUser = FUser()
+                    dbUser.id = user?.uid ?? ""
+                    dbUser.email = user?.email ?? ""
+                    dbUser.name = self.userName
+                    
+                    DatabaseManager.shared.storeUserOnFirebase(user: dbUser)
                     self.showAlert(message: ("SignedUp as : \(self.user?.displayName ?? "")"))
                 }
             }
+            self.showLoader = false
         }
     }
 
     func login() {
+        self.showLoader = true
         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -44,6 +52,7 @@ class AuthViewModel: ViewModel {
                     self.showAlert(message: ("Signed In as : \(self.user?.displayName ?? "")"))
                 }
             }
+            self.showLoader = false
         }
     }
 

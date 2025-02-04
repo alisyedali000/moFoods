@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    
+    @StateObject var appleSignIn = AppleSignIn()
     @StateObject var vm = AuthViewModel()
     @Environment(\.colorScheme) var colorScheme
 
@@ -84,6 +84,12 @@ extension LoginView{
             
             
             SocialLoginButton(icon: ImageName.appleIcon, title: "Sign in with Apple") {
+                
+                appleSignIn.signIn { isSucess in
+                    if isSucess{
+
+                    }
+                }
                 
             }
         }
