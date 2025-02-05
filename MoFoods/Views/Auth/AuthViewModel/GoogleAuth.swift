@@ -4,116 +4,89 @@
 //
 //  Created by Syed Ahmad  on 04/02/2025.
 //
+import SwiftUI
+import Firebase
+import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
 
+class GoogleSignIn: ObservableObject {
+    
+    @Published var authResult: AuthDataResult?
 
-//import Firebase
-//import GoogleSignIn
-//import SwiftUI
-//
-//class GoogleAuth: ObservableObject {
-//
-//}
-//extension GoogleAuth{
-//    func signIn(completion: @escaping (AuthDataResult) -> Void) {
-//        
-//        if GIDSignIn.sharedInstance.hasPreviousSignIn() {
-//            GIDSignIn.sharedInstance.restorePreviousSignIn { [unowned self] user, error in
-//                self.authenticateUser(for: user, with: error, authData: { result in
-//                    completion(result)
-//                })
-//            }
-//        } else {
-//            
-//            guard let clientID = FirebaseApp.app()?.options.clientID else { return }
-//            
-//            
-//            let configuration = GIDConfiguration(clientID: clientID)
-//            
-//            
-//            guard let presentingViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController else {return}
-//            
-//            
-//            GIDSignIn.sharedInstance.signIn(with: configuration, presenting: presentingViewController) { user, error in
-//                self.authenticateUser(for: user, with: error, authData: { result in
-//                    completion(result)
-//                })
-//           
-//            }
-//        }
-//    }
-//    
-//    private func authenticateUser(for user: GIDGoogleUser?, with error: Error?, authData : @escaping(AuthDataResult) -> Void) {
-//        
-//        if let error = error {
-//            print(error.localizedDescription)
-//            return
-//        }
-//        
-//        
-//        guard let authentication = user?.authentication, let idToken = authentication.idToken else { return }
-//        
-//        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: authentication.accessToken)
-//        
-//        
-//        Auth.auth().signIn(with: credential) { authResult, error in
-//            
-//            if let error = error {
-//                print(error.localizedDescription)
-//                return
-//            }else{
-////                self.setUserData(authResult: authResult!)
-//                authData(authResult!)
-//            }
-//            
-//        }
-//    }
-//    
-//    
-//    func signOut() {
-//        
-//        GIDSignIn.sharedInstance.signOut()
-//        
-//        do {
-//            
-//            try Auth.auth().signOut()
-//            
-////            state = .signedOut
-//            //        UserDefaultManager.Authenticated.send(false)
-//        } catch {
-//            print(error.localizedDescription)
-//        }
-//    }
-//    
-//    func deleteUser(){
-//        let user = Auth.auth().currentUser
-//        
-//        user?.delete { error in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            } else {
-//                print("User successfully deleted from firebase")
-//            }
-//        }
-//        
-//        
-//    }
-//    
-//    
-//    
-////    func setUserData(authResult: AuthDataResult){
-////
-//////        self.authVM.email = authResult.user.email ?? ""
-//////        self.authVM.name = authResult.user.displayName ?? ""
-//////        self.authVM.socialKey = "google"
-//////        self.authVM.socialToken = authResult.user.uid
-//////        self.authVM.deviceID = ""
-////        Task{
-//////            await authVM.socialLogin(){
-//////                UserDefaultManager.shared.setSocialLogin(true)
-////            }
-////        }
-//        
-//        
-////    }
-//        
-//}
+    func restorePreviousSignIn(completion: @escaping (Bool) -> Void) {
+        GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] user, error in
+            if let user = user {
+                self?.authenticateUser(user: user) { result in
+                    self?.authResult = result
+                    
+                }
+                completion(true)  // Sign-in restored successfully
+            } else {
+                completion(false) // No previous sign-in, proceed with new login
+            }
+        }
+    }
+
+    func signIn() {
+        restorePreviousSignIn { [weak self] success in
+            guard let self = self else { return }
+            
+            if success {
+                print("User is already signed in. No need to re-authenticate.")
+                return
+            }
+            
+            // If no previous sign-in, proceed with new login
+            guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+            let config = GIDConfiguration(clientID: clientID)
+            GIDSignIn.sharedInstance.configuration = config
+
+            guard let presentingViewController = UIApplication.shared.windows.first?.rootViewController else { return }
+
+            GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { signInResult, error in
+                if let error = error {
+                    print("Google Sign-In failed: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let signInResult = signInResult else { return }
+                self.authenticateUser(user: signInResult.user) { result in
+                    self.authResult = result
+                    self.setUserData()
+                }
+            }
+        }
+    }
+
+    private func authenticateUser(user: GIDGoogleUser, completion: @escaping (AuthDataResult?) -> Void) {
+        let idToken = user.idToken?.tokenString
+        let accessToken = user.accessToken.tokenString
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken ?? "", accessToken: accessToken)
+
+        Auth.auth().signIn(with: credential) { authResult, error in
+            if let error = error {
+                print("Firebase authentication failed: \(error.localizedDescription)")
+                completion(nil)
+            } else {
+                print("User signed in with Firebase: \(authResult?.user.uid ?? "Unknown UID")")
+                completion(authResult)
+            }
+        }
+    }
+    
+    private func setUserData(){
+        var user = UserModel()
+        user.email = authResult?.user.email ?? ""
+        user.name = authResult?.user.displayName ?? ""
+        user.id = authResult?.user.uid ?? ""
+        UserDefaultManager.shared.setID(id: authResult?.user.uid ?? "")
+        DatabaseManager.shared.storeUserOnFirebase(user: user)
+    }
+
+    func signOut() {
+        GIDSignIn.sharedInstance.signOut()
+        try? Auth.auth().signOut()
+        authResult = nil
+    }
+}

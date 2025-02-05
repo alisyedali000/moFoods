@@ -154,12 +154,28 @@ extension AppleSignIn {
     func setUserData(authResult: AuthDataResult) {
         self.authResult = authResult
         
-        let user = authResult.user
-        var dbUser = FUser()
-        dbUser.id = user.uid
-        dbUser.email = user.email ?? ""
-        dbUser.name = user.displayName ?? ""
-        DatabaseManager.shared.storeUserOnFirebase(user: dbUser)
+        DatabaseManager.shared.getUserFrom(id: authResult.user.uid, completion: { user in
+        
+            if user.preferences?.allergies.isEmpty ?? true{
+                
+                let user = authResult.user
+                var dbUser = UserModel()
+                dbUser.id = user.uid
+                dbUser.email = user.email ?? ""
+                dbUser.name = user.displayName ?? ""
+                UserDefaultManager.shared.setID(id: user.uid)
+                DatabaseManager.shared.storeUserOnFirebase(user: dbUser)
+                
+            } else {
+                
+                UserDefaultManager.shared.set(user: user)
+                UserDefaultManager.Authenticated.send(true)
+                
+            }
+            
+        })
+        
+
     }
 
     func getCredentialState(userID: String) {

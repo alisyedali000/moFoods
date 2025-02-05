@@ -23,11 +23,11 @@ class DatabaseManager {
 // MARK: Store user
 extension DatabaseManager {
     
-    func storeUserOnFirebase(user: FUser) {
+    func storeUserOnFirebase(user: UserModel) {
         
-        let firebaseID = "_\(user.id)"
+        let firebaseID = "\(user.id)"
         
-        let userData = FirebaseUser().changeUserToDictionary(user: user, firebaseId: firebaseID)
+        let userData = UserModel().changeUserToDictionary(user: user, firebaseId: firebaseID)
         
         let reference = self.database.child(users).child(firebaseID)
         
@@ -60,21 +60,43 @@ extension DatabaseManager {
 //        self.database.child(users).child(myId).child("user_image").setValue(image)
 //    }
     
-//    func changeUserName(name: String) {
-//        
-//        let myId = UserDefaultManager.shared.firebaseID
-//        
-//        if myId.isEmpty {
-//            debugPrint("my firebase id is empty in change user name")
-//            return
-//        }
-//        
-//        self.database.child(users).child(myId).child("user_name").setValue(name)
-//    }
+    func updateUserPreferences(preferences: Preferences) {
+        
+        let pref = Preferences().changePreferencesToDictionary(preferences: preferences)
+        
+        let myId = UserDefaultManager.shared.userId
+        
+        if myId.isEmpty {
+            debugPrint("my firebase id is empty in change user name")
+            return
+        }
+        
+        self.database.child(users).child(myId).child("preferences").setValue(pref)
+    }
     
+    func updateUserLocation(lat: Double, long: Double) {
+        
+        let locationData : [String : Any] =
+            
+            [
+                "lat": lat,
+                "long": long
+            ]
+        
+        
+        
+        let myId = UserDefaultManager.shared.userId
+        
+        if myId.isEmpty {
+            debugPrint("my firebase id is empty in change user name")
+            return
+        }
+        
+        self.database.child(users).child(myId).child("location").setValue(locationData)
+    }
 
     
-    func getUserFrom(id: String, completion: @escaping (FirebaseUser) -> Void) {
+    func getUserFrom(id: String, completion: @escaping (UserModel) -> Void) {
         
         if id.isEmpty {
             
@@ -90,18 +112,18 @@ extension DatabaseManager {
              
                 do {
                     
-                    let user = try snapshot.data(as: FirebaseUser.self)
+                    let user = try snapshot.data(as: UserModel.self)
                     
                     completion(user)
                     
                 } catch let error {
                     debugPrint(error)
-                    completion(FirebaseUser())
+                    completion(UserModel())
                 }
                 
             } else {
                 
-                completion(FirebaseUser())
+                completion(UserModel())
             }
         }
     }

@@ -5,74 +5,18 @@
 //  Created by Syed Ahmad  on 04/02/2025.
 //
 
-
-struct FirebaseUser : Codable {
-    
-    var name: String
-    var email: String
-    var firebaseID: String
-
-    
-    enum CodingKeys: String, CodingKey {
-        
-        case name = "user_name"
-        case email = "phone_number"
-        case firebaseID = "firebaseID"
-
-    }
-}
-
-extension FirebaseUser {
-    
-    init() {
-        
-        self.name = ""
-        self.email = ""
-        self.firebaseID = ""
-
-    }
-}
-
-extension FirebaseUser {
-    
-    func changeUserToDictionary(user: FUser, firebaseId: String) -> [String : Any] {
-        
-        let userValue : [String : Any] = [
-            "name": user.name,
-            "email": user.email,
-            "firebaseID": firebaseId,
-            "groupCount": user.groupCount,
-            "hasAdvancedSearch": user.hasAdvancedSearch,
-            "hasPlusPlan": user.hasPlusPlan,
-            "hasUnlimitedFavouritesMeal" : user.hasUnlimitedFavouritesMeal,
-            "hasUnlimitedGroups": user.hasUnlimitedGroups,
-            "hasUnlimitedPins": user.hasUnlimitedPins,
-            "hasUnlimitedSharedFolders": user.hasUnlimitedSharedFolders,
-            "pinCount": user.pinCount,
-            "sharedFolders" : user.sharedFolders,
-            "preferences": [
-                 "ambiance": user.preferences.ambiance,
-                 "prefferedCuisine": user.preferences.prefferedCuisine,
-                 "allergies": user.preferences.allergies
-             ]
-        ]
-        
-        return userValue
-    }
-}
-
-
-struct FUser: Codable{
+struct UserModel: Codable{
     
     var id: String
     var name, email : String
     var hasAdvancedSearch : Bool
     var hasPlusPlan, hasUnlimitedFavouritesMeal, hasUnlimitedGroups, hasUnlimitedPins, hasUnlimitedSharedFolders: Bool
     var pinCount, groupCount, sharedFolders: Int
-    var preferences : Preferences
+    var preferences : Preferences?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, email
+        case id = "firebaseID"
+        case name, email
         case hasAdvancedSearch, hasPlusPlan, hasUnlimitedFavouritesMeal, hasUnlimitedGroups, hasUnlimitedPins, hasUnlimitedSharedFolders
         case pinCount, groupCount, sharedFolders
         case preferences
@@ -115,7 +59,36 @@ struct FUser: Codable{
     
 }
 
-struct Preferences: Codable{
+extension UserModel{
+    
+    func changeUserToDictionary(user: UserModel, firebaseId: String) -> [String : Any] {
+        
+        let userValue : [String : Any] = [
+            "name": user.name,
+            "email": user.email,
+            "firebaseID": firebaseId,
+            "groupCount": user.groupCount,
+            "hasAdvancedSearch": user.hasAdvancedSearch,
+            "hasPlusPlan": user.hasPlusPlan,
+            "hasUnlimitedFavouritesMeal" : user.hasUnlimitedFavouritesMeal,
+            "hasUnlimitedGroups": user.hasUnlimitedGroups,
+            "hasUnlimitedPins": user.hasUnlimitedPins,
+            "hasUnlimitedSharedFolders": user.hasUnlimitedSharedFolders,
+            "pinCount": user.pinCount,
+            "sharedFolders" : user.sharedFolders,
+            "preferences": [
+                "ambiance": user.preferences?.ambiance,
+                "prefferedCuisine": user.preferences?.prefferedCuisine,
+                "allergies": user.preferences?.allergies
+             ]
+        ]
+        
+        return userValue
+    }
+    
+}
+
+struct Preferences: Codable, Hashable{
     
     var ambiance, prefferedCuisine, allergies : [String]
     
@@ -131,8 +104,22 @@ struct Preferences: Codable{
     }
     
     init(){
-        self.ambiance = ["Hello"]
+        self.ambiance = []
         self.prefferedCuisine = []
         self.allergies = []
+    }
+    
+    func changePreferencesToDictionary(preferences: Preferences) -> [String : Any] {
+        
+        let prefValues : [String : Any] = [
+
+             
+                 "ambiance": preferences.ambiance,
+                 "prefferedCuisine": preferences.prefferedCuisine,
+                 "allergies": preferences.allergies
+             
+        ]
+        
+        return prefValues
     }
 }

@@ -9,24 +9,26 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject var appleSignIn = AppleSignIn()
+    @StateObject var gooleSignIn = GoogleSignIn()
     @StateObject var vm = AuthViewModel()
+    @State var moveNext = false
     @Environment(\.colorScheme) var colorScheme
-
-    @State var moveToSignUp = false
     var body: some View {
         screenView
             .padding(.horizontal)
             .addOnboardingHeader
-            .navigationDestination(isPresented: $moveToSignUp) {
-                SignUpView()
-                    .navigationBarBackButtonHidden()
-            }
             .alert("MoFoods", isPresented: $vm.showError) {
                 Button("OK"){
                     
                 }
             } message: {
                 Text(vm.errorMessage)
+            }
+            .navigationDestination(isPresented: $moveNext) {
+                
+                PostOnboardingViewer()
+                    .navigationBarBackButtonHidden()
+                
             }
 
     }
@@ -80,6 +82,8 @@ extension LoginView{
             
             SocialLoginButton(icon: ImageName.googleIcon, title: "Sign in with Google") {
                 
+                gooleSignIn.signIn()
+                
             }
             
             
@@ -88,6 +92,8 @@ extension LoginView{
                 appleSignIn.signIn { isSucess in
                     if isSucess{
 
+                        self.moveNext.toggle()
+                        
                     }
                 }
                 
@@ -139,9 +145,10 @@ extension LoginView{
             Text("Don’t have an account yet? ")
                 .font(.regular(size: 16))
                 
-            Button{
+            NavigationLink{
                 
-                self.moveToSignUp.toggle()
+                SignUpView()
+                    .navigationBarBackButtonHidden()
                 
             }label: {
                 

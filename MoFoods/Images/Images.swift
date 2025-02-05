@@ -38,6 +38,22 @@ enum ImageName: String {
         Image("AppIconRounded")
     }
     
+    static var pOnboarding1: Image {
+        
+        Image("pOnboarding1")
+    }
+    
+    
+    static var pOnboarding2: Image {
+        
+        Image("pOnboarding2")
+    }
+    
+    static var pOnboarding3: Image {
+        
+        Image("pOnboarding3")
+    }
+    
     //MARK: Social Logins
     
     static var googleIcon: Image {

@@ -28,11 +28,11 @@ class AuthViewModel: ViewModel {
                     self.showAlert(message: error.localizedDescription)
                 } else {
                     self.user = authResult?.user
-                    var dbUser = FUser()
+                    var dbUser = UserModel()
                     dbUser.id = user?.uid ?? ""
                     dbUser.email = user?.email ?? ""
                     dbUser.name = self.userName
-                    
+                    UserDefaultManager.shared.setID(id: user?.uid ?? "")
                     DatabaseManager.shared.storeUserOnFirebase(user: dbUser)
                     self.showAlert(message: ("SignedUp as : \(self.user?.displayName ?? "")"))
                 }
@@ -49,6 +49,8 @@ class AuthViewModel: ViewModel {
                     self.showAlert(message: error.localizedDescription)
                 } else {
                     self.user = authResult?.user
+                    UserDefaultManager.shared.setID(id: authResult?.user.uid ?? "")
+//                    UserDefaultManager.Authenticated.send(true)
                     self.showAlert(message: ("Signed In as : \(self.user?.displayName ?? "")"))
                 }
             }
