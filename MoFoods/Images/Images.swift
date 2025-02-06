@@ -54,6 +54,11 @@ enum ImageName: String {
         Image("pOnboarding3")
     }
     
+    static var pOnboarding4: Image {
+        
+        Image("pOnboarding4")
+    }
+    
     //MARK: Social Logins
     
     static var googleIcon: Image {
@@ -65,5 +70,43 @@ enum ImageName: String {
         
         Image("apple")
     }
+    
+    
+    static var savedIcon: Image {
+        
+        Image("savedIcon")
+    }
+    
+    
+    //MARK: TabBar
+   
+    static var profile: Image {
+        
+        Image("profile")
+    }
+    
+    static var home: Image {
+        
+        Image("Home")
+    }
+    
+    static var groups: Image {
+        
+        Image("3 User")
+    }
+    
+    static var pin: Image {
+        
+        Image("location")
+    }
+    
+    static var discover: Image {
+        
+        Image("magicpen")
+    }
+    
+    
+    
+    
     
 }

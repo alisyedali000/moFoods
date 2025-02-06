@@ -16,11 +16,13 @@ import FirebaseAuth
 class AppleSignIn: NSObject, ObservableObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     
     @Published var authResult : AuthDataResult?
-
+    @Published var showLoader = false
+    
     private var currentNonce: String?
     private var completionHandler: ((Bool) -> Void)?
 
     func signIn(completion: @escaping (Bool) -> Void) {
+        self.showLoader = true
         currentNonce = randomNonceString()
         self.completionHandler = completion  // Store the completion handler
 
@@ -90,13 +92,14 @@ class AppleSignIn: NSObject, ObservableObject, ASAuthorizationControllerDelegate
                             print("Auth Time: \(idTokenResult.authDate)")
                             print("Issued At: \(idTokenResult.issuedAtDate)")
                             print("Sign-in Provider: \(idTokenResult.signInProvider)")
-                            self.completionHandler?(true)
+
+                            self.setUserData(authResult: authResult!)
                         }
                     })
 //                    authResult?.user
                     
                     print("Successfully signed in with Apple and Firebase.")
-                    self.setUserData(authResult: authResult!)
+
 
                     debugPrint(authResult?.user.uid ?? "No UID")
                      // Call the completion handler with success
@@ -152,11 +155,12 @@ class AppleSignIn: NSObject, ObservableObject, ASAuthorizationControllerDelegate
 extension AppleSignIn {
     
     func setUserData(authResult: AuthDataResult) {
+        
         self.authResult = authResult
         
         DatabaseManager.shared.getUserFrom(id: authResult.user.uid, completion: { user in
         
-            if user.preferences?.allergies.isEmpty ?? true{
+            if user.isFirstLogin {
                 
                 let user = authResult.user
                 var dbUser = UserModel()
@@ -165,15 +169,18 @@ extension AppleSignIn {
                 dbUser.name = user.displayName ?? ""
                 UserDefaultManager.shared.setID(id: user.uid)
                 DatabaseManager.shared.storeUserOnFirebase(user: dbUser)
+                self.completionHandler?(true) //sending as a first Login
                 
             } else {
                 
                 UserDefaultManager.shared.set(user: user)
                 UserDefaultManager.Authenticated.send(true)
-                
+//                changeRootView(to: TabBar())
             }
             
         })
+        
+        self.showLoader = false
         
 
     }

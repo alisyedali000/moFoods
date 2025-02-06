@@ -9,14 +9,27 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject var appleSignIn = AppleSignIn()
-    @StateObject var gooleSignIn = GoogleSignIn()
+    @StateObject var googleSignIn = GoogleSignIn()
     @StateObject var vm = AuthViewModel()
     @State var moveNext = false
     @Environment(\.colorScheme) var colorScheme
     var body: some View {
-        screenView
-            .padding(.horizontal)
-            .addOnboardingHeader
+        
+        ZStack{
+            
+            screenView
+                .padding(.horizontal)
+                .addOnboardingHeader
+                .adaptsToKeyboard
+                .addDoneButton
+
+            
+            if vm.showLoader || appleSignIn.showLoader || googleSignIn.showLoader {
+                
+                LoaderView()
+                
+            }
+        }
             .alert("MoFoods", isPresented: $vm.showError) {
                 Button("OK"){
                     
@@ -26,10 +39,11 @@ struct LoginView: View {
             }
             .navigationDestination(isPresented: $moveNext) {
                 
-                PostOnboardingViewer()
+                GetStartedView()
                     .navigationBarBackButtonHidden()
                 
             }
+
 
     }
 }
@@ -50,7 +64,12 @@ extension LoginView{
             textFields
             
             AppButton(title: "Log In") {
-                vm.login()
+                vm.login(){ isFirstLogin in
+                    
+                    if isFirstLogin{
+                        self.moveNext.toggle()
+                    }
+                }
             }
             
             signUpNavigation
@@ -82,15 +101,23 @@ extension LoginView{
             
             SocialLoginButton(icon: ImageName.googleIcon, title: "Sign in with Google") {
                 
-                gooleSignIn.signIn()
+                googleSignIn.signIn(){ isFirstLogin in
+                    
+                    if isFirstLogin{
+                        
+                        self.moveNext.toggle()
+                        
+                    }
+                    
+                }
                 
             }
             
             
             SocialLoginButton(icon: ImageName.appleIcon, title: "Sign in with Apple") {
                 
-                appleSignIn.signIn { isSucess in
-                    if isSucess{
+                appleSignIn.signIn { isFirstLogin in
+                    if isFirstLogin{
 
                         self.moveNext.toggle()
                         

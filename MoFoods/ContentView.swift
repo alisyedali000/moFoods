@@ -8,11 +8,45 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        OnboardingViewer()
+
+        @AppStorage("isAuthenticated") var isAuthenticated = UserDefaultManager.IsAuthenticated()
+    
+        var body: some View {
+            NavigationStack{
+                Group {
+
+                    OnboardingViewer()
+                    
+                }
+            }.onAppear(){
+                    
+                    if isAuthenticated{
+                        
+                        changeRootView(to: TabBar())
+                        
+                    }
+                
+            }
+            .onReceive(UserDefaultManager.Authenticated) { newValue in
+                DispatchQueue.main.async{
+                    
+                    isAuthenticated = newValue
+                    if newValue{
+
+                        changeRootView(to: TabBar())
+
+                    } else {
+                        
+                        changeRootView(to: ContentView())
+                        
+                    }
+                }
+            }
+        
     }
 }
 
 #Preview {
     ContentView()
 }
+

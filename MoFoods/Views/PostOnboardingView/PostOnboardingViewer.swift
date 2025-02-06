@@ -35,6 +35,9 @@ extension PostOnboardingViewer{
                 PostOnboardingView(image: ImageName.pOnboarding2, title: "Access to location 📍", description: "Enable location sharing to discover new places to eat.")
             case 1:
                 PostOnboardingView(image: ImageName.pOnboarding3, title: "Set your preferences 📝", description: "Select your preferences and tell us your dietary needs.")
+                
+            case 2:
+                PostOnboardingView(image: ImageName.pOnboarding4, title: "Discover new restaurants and pin your favourite", description: "Solve the biggest question, “What should I eat today?” by letting the AI recommend you places to eat")
 
             default:
                 EmptyView()
@@ -97,7 +100,9 @@ extension PostOnboardingViewer{
                         view += 1
                     
                     case 2:
-                        UserDefaultManager.Authenticated.send(true)
+//                    changeRootView(to: TabBar())
+                    UserDefaultManager.Authenticated.send(true)
+                        
                 default:
                     return
                 }

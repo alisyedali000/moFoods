@@ -57,7 +57,7 @@ struct AddOnBoardingHeader: ViewModifier {
             ZStack(alignment: .top){
                 
                 Rectangle()
-                    .foregroundStyle(Color.tabBarBlue)
+                    .foregroundStyle(Color.white)
                 
                 ZStack{
                     ImageName.onboarding1

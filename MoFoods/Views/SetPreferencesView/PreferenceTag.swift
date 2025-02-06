@@ -35,7 +35,7 @@ extension PreferenceTag{
                 .background(
                     
                     RoundedRectangle(cornerRadius: 33)
-                        .foregroundStyle(isSelected ? Color.primaryOrange.opacity(0.3) : Color.lightGray)
+                        .foregroundStyle(isSelected ? Color.primaryOrange.opacity(0.3) : Color.lightGray.opacity(0.4))
                         .frame(height: 35)
                     
                 )
@@ -49,7 +49,7 @@ extension PreferenceTag{
 }
 
 #Preview {
-    PreferenceTag(isSelected: .constant(true), title: "Hello"){
+    PreferenceTag(isSelected: .constant(false), title: "Hello"){
         
     }
 }

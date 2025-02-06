@@ -13,17 +13,37 @@ struct SignUpView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
     @StateObject var vm = AuthViewModel()
-
+    @StateObject var appleSignIn = AppleSignIn()
+    @StateObject var googleSignIn = GoogleSignIn()
+    @State var moveNext = false
+    
     var body: some View {
-        screenView
-            .padding(.horizontal)
-            .addOnboardingHeader
+        ZStack{
+            
+            screenView
+                .padding(.horizontal)
+                .addOnboardingHeader
+                .adaptsToKeyboard
+                .addDoneButton
+            
+            if vm.showLoader || appleSignIn.showLoader || googleSignIn.showLoader {
+                
+                LoaderView()
+                
+            }
+        }
             .alert("MoFoods", isPresented: $vm.showError) {
                 Button("OK"){
                     
                 }
             } message: {
                 Text(vm.errorMessage)
+            }
+            .navigationDestination(isPresented: $moveNext) {
+                
+                GetStartedView()
+                    .navigationBarBackButtonHidden()
+                
             }
     }
 }
@@ -46,7 +66,9 @@ extension SignUpView{
                 textFields
                 
                 AppButton(title: "Create new account") {
-                    vm.signUp()
+                    vm.signUp(){ _ in
+                        self.moveNext.toggle()
+                    }
                 }
                 
                 signInNavigation
@@ -89,12 +111,30 @@ extension SignUpView{
         
         VStack{
             
-            SocialLoginButton(icon: ImageName.googleIcon, title: "Sign in with Google") {
+            SocialLoginButton(icon: ImageName.googleIcon, title: "Sign up with Google") {
+                
+                googleSignIn.signIn(){ isFirstLogin in
+                    
+                    if isFirstLogin{
+                        
+                        self.moveNext.toggle()
+                        
+                    }
+                    
+                }
                 
             }
             
             
-            SocialLoginButton(icon: ImageName.appleIcon, title: "Sign in with Apple") {
+            SocialLoginButton(icon: ImageName.appleIcon, title: "Sign up with Apple") {
+                
+                appleSignIn.signIn { isFirstLogin in
+                    if isFirstLogin{
+
+                        self.moveNext.toggle()
+                        
+                    }
+                }
                 
             }
         }

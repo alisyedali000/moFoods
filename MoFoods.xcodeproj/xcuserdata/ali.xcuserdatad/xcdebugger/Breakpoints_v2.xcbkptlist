@@ -7,80 +7,64 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "15C432B1-6D9B-4874-B1EC-03ACE8ED6F6A"
+            uuid = "88502C66-633E-44B3-830A-AA0980C996B9"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoFoods/Views/Auth/AuthViewModel/AppleSignIn.swift"
+            filePath = "MoFoods/Views/Auth/AuthViewModel/AuthViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "authorizationController(controller:didCompleteWithAuthorization:)"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "signUp(completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "2FB11EC5-137C-4ABE-9C94-D5AEABA8988D"
+            uuid = "895791FE-AE0A-4156-BF92-E0D1B20491B2"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoFoods/Views/Auth/AuthViewModel/AppleSignIn.swift"
+            filePath = "MoFoods/Views/Auth/AuthViewModel/AuthViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "159"
-            endingLineNumber = "159"
-            landmarkName = "setUserData(authResult:)"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "setUserData(completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C5EE543B-80DD-4657-8D00-FB937B2720DD"
+            uuid = "353A18C6-7A60-48F9-80EE-AC6DB8CB4567"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoFoods/Views/Auth/AuthViewModel/AppleSignIn.swift"
+            filePath = "MoFoods/Views/Auth/AuthViewModel/AuthViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
-            landmarkName = "setUserData(authResult:)"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "setUserData(completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DA66569E-3D0D-43CB-9390-8376B33937A8"
+            uuid = "3C1AFC98-D476-46D3-8D94-E4A4F8154282"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoFoods/Views/Auth/AuthViewModel/AppleSignIn.swift"
+            filePath = "MoFoods/Views/Auth/AuthViewModel/AuthViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
-            landmarkName = "setUserData(authResult:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1F69E606-92B1-44F7-AF07-A2283DEC7518"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MoFoods/Views/Auth/AuthViewModel/AppleSignIn.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
-            landmarkName = "setUserData(authResult:)"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
+            landmarkName = "setUserData(completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

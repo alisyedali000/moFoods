@@ -13,31 +13,20 @@ struct UserModel: Codable{
     var hasPlusPlan, hasUnlimitedFavouritesMeal, hasUnlimitedGroups, hasUnlimitedPins, hasUnlimitedSharedFolders: Bool
     var pinCount, groupCount, sharedFolders: Int
     var preferences : Preferences?
-
+    var location : Location?
+    var isFirstLogin: Bool
+    
     enum CodingKeys: String, CodingKey {
         case id = "firebaseID"
         case name, email
         case hasAdvancedSearch, hasPlusPlan, hasUnlimitedFavouritesMeal, hasUnlimitedGroups, hasUnlimitedPins, hasUnlimitedSharedFolders
         case pinCount, groupCount, sharedFolders
         case preferences
+        case location
+        case isFirstLogin
        
     }
-    init(id: String, name: String, email: String, hasAdvancedSearch: Bool, hasPlusPlan: Bool, hasUnlimitedFavouritesMeal: Bool, hasUnlimitedGroups: Bool, hasUnlimitedPins: Bool, hasUnlimitedSharedFolders: Bool, pinCount: Int, groupCount : Int, sharedFolders: Int, preferenes : Preferences) {
-        self.id = id
-        self.name = name
-        self.email = email
-        self.hasAdvancedSearch = hasAdvancedSearch
-        self.hasPlusPlan = hasPlusPlan
-        self.hasUnlimitedFavouritesMeal = hasUnlimitedFavouritesMeal
-        self.hasUnlimitedGroups = hasUnlimitedGroups
-        self.hasUnlimitedPins = hasUnlimitedPins
-        self.hasUnlimitedSharedFolders = hasUnlimitedSharedFolders
-        self.pinCount = pinCount
-        self.groupCount = groupCount
-        self.sharedFolders = sharedFolders
-        self.preferences = preferenes
-        
-    }
+
     
     init(){
         self.id = ""
@@ -53,6 +42,8 @@ struct UserModel: Codable{
         self.groupCount = 0
         self.sharedFolders = 0
         self.preferences = Preferences()
+        self.location = Location()
+        self.isFirstLogin = true
 
     }
 
@@ -76,11 +67,7 @@ extension UserModel{
             "hasUnlimitedSharedFolders": user.hasUnlimitedSharedFolders,
             "pinCount": user.pinCount,
             "sharedFolders" : user.sharedFolders,
-            "preferences": [
-                "ambiance": user.preferences?.ambiance,
-                "prefferedCuisine": user.preferences?.prefferedCuisine,
-                "allergies": user.preferences?.allergies
-             ]
+            "isFirstLogin" : user.isFirstLogin
         ]
         
         return userValue
@@ -91,22 +78,24 @@ extension UserModel{
 struct Preferences: Codable, Hashable{
     
     var ambiance, prefferedCuisine, allergies : [String]
-    
+    var distance : Double
     enum CodingKeys: String, CodingKey {
         case ambiance, prefferedCuisine, allergies
-       
+        case distance
     }
     
-    init(ambiance: [String], prefferedCuisine: [String], allergies: [String]) {
+    init(ambiance: [String], prefferedCuisine: [String], allergies: [String], distance: Double) {
         self.ambiance = ambiance
         self.prefferedCuisine = prefferedCuisine
         self.allergies = allergies
+        self.distance = distance
     }
     
     init(){
         self.ambiance = []
         self.prefferedCuisine = []
         self.allergies = []
+        self.distance = 0.0
     }
     
     func changePreferencesToDictionary(preferences: Preferences) -> [String : Any] {
@@ -116,10 +105,33 @@ struct Preferences: Codable, Hashable{
              
                  "ambiance": preferences.ambiance,
                  "prefferedCuisine": preferences.prefferedCuisine,
-                 "allergies": preferences.allergies
-             
+                 "allergies": preferences.allergies,
+                 "distance" : preferences.distance
         ]
         
         return prefValues
     }
+}
+
+
+struct Location: Codable{
+    
+    var lat, long: Double
+    
+    enum CodingKeys: String, CodingKey{
+        
+        case lat, long
+        
+    }
+    
+    init(lat: Double, long: Double) {
+        self.lat = lat
+        self.long = long
+    }
+    
+    init(){
+        self.lat = 0.0
+        self.long = 0.0
+    }
+    
 }

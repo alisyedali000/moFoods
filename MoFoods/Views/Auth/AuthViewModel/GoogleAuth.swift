@@ -13,27 +13,38 @@ import GoogleSignIn
 class GoogleSignIn: ObservableObject {
     
     @Published var authResult: AuthDataResult?
-
-    func restorePreviousSignIn(completion: @escaping (Bool) -> Void) {
+    @Published var showLoader = false
+    
+    func restorePreviousSignIn(completion: @escaping (Bool, Bool) -> Void) {
         GIDSignIn.sharedInstance.restorePreviousSignIn { [weak self] user, error in
             if let user = user {
                 self?.authenticateUser(user: user) { result in
                     self?.authResult = result
-                    
+                    self?.setUserData(completion: { isFirstLogin in
+                        if isFirstLogin{
+                            completion(true, true)
+                        } else {
+                            completion(true, false)
+                        }
+                    })
                 }
-                completion(true)  // Sign-in restored successfully
+   // Sign-in restored successfully
             } else {
-                completion(false) // No previous sign-in, proceed with new login
+                completion(false, false) // No previous sign-in, proceed with new login
             }
         }
     }
 
-    func signIn() {
-        restorePreviousSignIn { [weak self] success in
+    func signIn(completion: @escaping (Bool) -> Void) {
+        self.showLoader = true
+        restorePreviousSignIn { [weak self] success, isFirstLogin in
             guard let self = self else { return }
             
             if success {
                 print("User is already signed in. No need to re-authenticate.")
+                if isFirstLogin{
+                    completion(true)
+                }
                 return
             }
             
@@ -53,7 +64,9 @@ class GoogleSignIn: ObservableObject {
                 guard let signInResult = signInResult else { return }
                 self.authenticateUser(user: signInResult.user) { result in
                     self.authResult = result
-                    self.setUserData()
+                    self.setUserData(){ isFirstLogin in
+                        completion(isFirstLogin)
+                    }
                 }
             }
         }
@@ -75,13 +88,43 @@ class GoogleSignIn: ObservableObject {
         }
     }
     
-    private func setUserData(){
-        var user = UserModel()
-        user.email = authResult?.user.email ?? ""
-        user.name = authResult?.user.displayName ?? ""
-        user.id = authResult?.user.uid ?? ""
-        UserDefaultManager.shared.setID(id: authResult?.user.uid ?? "")
-        DatabaseManager.shared.storeUserOnFirebase(user: user)
+    private func setUserData(completion: @escaping (Bool) -> Void){
+//        var user = UserModel()
+//        user.email = authResult?.user.email ?? ""
+//        user.name = authResult?.user.displayName ?? ""
+//        user.id = authResult?.user.uid ?? ""
+//        UserDefaultManager.shared.setID(id: authResult?.user.uid ?? "")
+//        DatabaseManager.shared.storeUserOnFirebase(user: user)
+        
+        let authResultUser = authResult?.user
+        
+        DatabaseManager.shared.getUserFrom(id: authResultUser?.uid ?? "", completion: { user in
+        
+            if user.isFirstLogin {
+                
+
+                var dbUser = UserModel()
+                dbUser.id = authResultUser?.uid ?? ""
+                dbUser.email = authResultUser?.email ?? ""
+                dbUser.name = authResultUser?.displayName ?? ""
+                UserDefaultManager.shared.setID(id: authResultUser?.uid ?? "")
+                DatabaseManager.shared.storeUserOnFirebase(user: dbUser)
+                completion(true)
+
+                
+            } else {
+                completion(false)
+                UserDefaultManager.shared.set(user: user)
+                UserDefaultManager.Authenticated.send(true)
+//                changeRootView(to: TabBar())
+                
+            }
+            
+        })
+        
+        self.showLoader = false
+        
+        
     }
 
     func signOut() {

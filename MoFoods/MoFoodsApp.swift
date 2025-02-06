@@ -19,3 +19,12 @@ struct MoFoodsApp: App {
         }
     }
 }
+
+func changeRootView<NewRoot: View>(to view: NewRoot) {
+    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+        if let window = scene.windows.first {
+            window.rootViewController = UIHostingController(rootView: view)
+            window.makeKeyAndVisible()
+        }
+    }
+}
