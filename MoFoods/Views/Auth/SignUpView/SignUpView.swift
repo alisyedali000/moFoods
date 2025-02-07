@@ -23,7 +23,6 @@ struct SignUpView: View {
             screenView
                 .padding(.horizontal)
                 .addOnboardingHeader
-                .adaptsToKeyboard
                 .addDoneButton
             
             if vm.showLoader || appleSignIn.showLoader || googleSignIn.showLoader {

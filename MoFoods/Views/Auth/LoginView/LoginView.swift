@@ -20,7 +20,6 @@ struct LoginView: View {
             screenView
                 .padding(.horizontal)
                 .addOnboardingHeader
-                .adaptsToKeyboard
                 .addDoneButton
 
             
@@ -52,27 +51,30 @@ extension LoginView{
     
     var screenView: some View {
         
-        VStack(spacing: 20){
+        ScrollView(showsIndicators: false){
             
-            headerText
-                .padding(.top, 40)
-        
-            socialLogins
-
-            orView
-            
-            textFields
-            
-            AppButton(title: "Log In") {
-                vm.login(){ isFirstLogin in
-                    
-                    if isFirstLogin{
-                        self.moveNext.toggle()
+            VStack(spacing: 20){
+                
+                headerText
+                    .padding(.top, 40)
+                
+                socialLogins
+                
+                orView
+                
+                textFields
+                
+                AppButton(title: "Log In") {
+                    vm.login(){ isFirstLogin in
+                        
+                        if isFirstLogin{
+                            self.moveNext.toggle()
+                        }
                     }
                 }
+                
+                signUpNavigation
             }
-            
-            signUpNavigation
         }
         
     }
